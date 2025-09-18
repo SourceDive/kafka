@@ -15,9 +15,12 @@
 
 repositories {
   repositories {
+    maven { url "https://maven.aliyun.com/nexus/content/groups/public/" }
+    maven { url "https://maven.aliyun.com/nexus/content/repositories/jcenter" }
     // For license plugin.
     maven {
       url 'http://dl.bintray.com/content/netflixoss/external-gradle-plugins/'
+      allowInsecureProtocol = true  // 显式允许不安全协议
     }
   }
 }

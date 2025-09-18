@@ -17,6 +17,8 @@ import org.ajoberstar.grgit.Grgit
 
 buildscript {
   repositories {
+      maven { url "https://maven.aliyun.com/nexus/content/groups/public/" }
+      maven { url "https://maven.aliyun.com/nexus/content/repositories/jcenter" }
     mavenCentral()
     jcenter()
   }
@@ -36,6 +38,8 @@ allprojects {
   apply plugin: "jacoco"
 
   repositories {
+      maven { url "https://maven.aliyun.com/nexus/content/groups/public/" }
+      maven { url "https://maven.aliyun.com/nexus/content/repositories/jcenter" }
     mavenCentral()
   }
 
@@ -100,7 +104,7 @@ if (new File('.git').exists()) {
 
 subprojects {
   apply plugin: 'java'
-  apply plugin: 'maven'
+  apply plugin: 'maven-publish'
   apply plugin: 'signing'
   apply plugin: 'checkstyle'
 
@@ -128,7 +132,7 @@ subprojects {
 
           // To test locally, replace mavenUrl in ~/.gradle/gradle.properties to file://localhost/tmp/myRepo/
           mavenDeployer {
-              beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+              beforeDeployment { deployment -> signing.signPom(deployment) }
               repository(url: "${mavenUrl}") {
                   authentication(userName: "${mavenUsername}", password: "${mavenPassword}")
               }

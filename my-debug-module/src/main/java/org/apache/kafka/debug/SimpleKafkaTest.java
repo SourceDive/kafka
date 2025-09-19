@@ -56,7 +56,7 @@ public class SimpleKafkaTest {
         
         try {
             // 发送消息
-            for (int i = 0; i < 5; i++) {
+            for (int i = 0; i < 10; i++) {
                 String key = "key-" + i;
                 String value = "Hello Kafka 0.10.0! Message " + i;
                 

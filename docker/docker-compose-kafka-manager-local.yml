@@ -10,9 +10,4 @@ services:
       KAFKA_MANAGER_AUTH_ENABLED: "false"
     extra_hosts:
       - "host.docker.internal:host-gateway"
-    networks:
-      - kafka-manager-network
-
-networks:
-  kafka-manager-network:
-    driver: bridge
+    network_mode: "host"

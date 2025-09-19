@@ -2,6 +2,20 @@ Apache Kafka
 =================
 See our [web site](http://kafka.apache.org) for details on the project.
 
+## 📚 学习环境文档
+
+本项目已配置为Kafka 0.10.0源码学习环境，包含完整的开发工具和文档。
+
+**📖 查看完整文档**: [my-debug-docs/README.md](./my-debug-docs/README.md)
+
+**🚀 快速开始**:
+```bash
+# 一键启动开发环境
+./kafka-dev.sh
+```
+
+---
+
 You need to have [Gradle](http://www.gradle.org/installation) and [Java](http://www.oracle.com/technetwork/java/javase/downloads/index.html) installed.
 
 Kafka requires Gradle 2.0 or higher.

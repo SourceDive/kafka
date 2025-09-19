@@ -1,0 +1,18 @@
+version: '2'
+services:
+  kafka-manager:
+    image: sheepkiller/kafka-manager:latest
+    ports:
+      - "9000:9000"
+    environment:
+      ZK_HOSTS: host.docker.internal:2181
+      APPLICATION_SECRET: "letmein"
+      KAFKA_MANAGER_AUTH_ENABLED: "false"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    networks:
+      - kafka-manager-network
+
+networks:
+  kafka-manager-network:
+    driver: bridge

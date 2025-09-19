@@ -20,7 +20,6 @@ buildscript {
       maven { url "https://maven.aliyun.com/nexus/content/groups/public/" }
       maven { url "https://maven.aliyun.com/nexus/content/repositories/jcenter" }
     mavenCentral()
-    jcenter()
   }
   apply from: file('gradle/buildscript.gradle'), to: buildscript
 
@@ -402,19 +401,19 @@ project(':core') {
     testCompile libs.junit
     testCompile libs.scalaTest
 
-    scoverage libs.scoveragePlugin
-    scoverage libs.scoverageRuntime
+    // scoverage libs.scoveragePlugin
+    // scoverage libs.scoverageRuntime
   }
 
   jacocoTestReport.enabled = false
-  scoverage {
-    reportDir = file("${rootProject.buildDir}/scoverage")
-    highlighting = false
-  }
-  checkScoverage {
-    minimumRate = 0.0
-  }
-  checkScoverage.shouldRunAfter('test')
+  // scoverage {
+  //   reportDir = file("${rootProject.buildDir}/scoverage")
+  //   highlighting = false
+  // }
+  // checkScoverage {
+  //   minimumRate = 0.0
+  // }
+  // checkScoverage.shouldRunAfter('test')
 
   configurations {
     // manually excludes some unnecessary dependencies
@@ -442,7 +441,7 @@ project(':core') {
   }
 
   systemTestLibs {
-    dependsOn testJar
+    // dependsOn testJar
   }
 
   task genProtocolErrorDocs(type: JavaExec) {
@@ -490,7 +489,7 @@ project(':core') {
   task siteDocsTar(dependsOn: ['genProtocolErrorDocs', 'genProtocolApiKeyDocs', 'genProtocolMessageDocs',
                                'genProducerConfigDocs', 'genConsumerConfigDocs', 'genKafkaConfigDocs',
                                ':connect:runtime:genConnectConfigDocs', ':streams:genStreamsConfigDocs'], type: Tar) {
-    archiveClassifier = 'site-docs'
+    // archiveClassifier = 'site-docs'
     compression = Compression.GZIP
     from project.file("../docs")
     into 'site-docs'
@@ -703,7 +702,7 @@ project(':streams') {
   }
 
   systemTestLibs {
-    dependsOn testJar
+    // dependsOn testJar
   }
 
   task genStreamsConfigDocs(type: JavaExec) {

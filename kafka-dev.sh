@@ -69,14 +69,10 @@ check_ports() {
         [ ! -z "$zk_port" ] && gum style --foreground=red "   - 端口2181被进程$zk_port占用"
         [ ! -z "$kafka_port" ] && gum style --foreground=red "   - 端口9092被进程$kafka_port占用"
         
-        if gum confirm "是否强制停止占用进程?"; then
-            [ ! -z "$zk_port" ] && kill -9 $zk_port
-            [ ! -z "$kafka_port" ] && kill -9 $kafka_port
-            gum style --foreground=green "✅ 已清理占用进程"
-        else
-            gum style --foreground=red "❌ 无法启动，请手动清理端口"
-            exit 1
-        fi
+        # 自动清理占用进程
+        [ ! -z "$zk_port" ] && kill -9 $zk_port
+        [ ! -z "$kafka_port" ] && kill -9 $kafka_port
+        gum style --foreground=green "✅ 已清理占用进程"
     fi
 }
 
@@ -88,30 +84,36 @@ start_zookeeper() {
     mkdir -p /tmp/zookeeper
     mkdir -p /tmp/kafka-logs
     
-    # 启动Zookeeper
-    ./bin/zookeeper-server-start.sh config/zookeeper.properties > /tmp/zookeeper.log 2>&1 &
+    # 使用clean脚本启动Zookeeper，避免SLF4J警告
+    ./bin/kafka-run-class-clean.sh org.apache.zookeeper.server.quorum.QuorumPeerMain config/zookeeper.properties > /tmp/zookeeper.log 2>&1 &
     local zk_pid=$!
     echo $zk_pid > /tmp/zookeeper.pid
     
     # 等待启动
-    gum spin --title="等待Zookeeper启动..." -- sleep 5
+    gum spin --title="等待Zookeeper启动..." -- sleep 8
     
     # 检查启动状态
-    if netstat -an | grep -q :2181; then
-        gum style --foreground=green "✅ Zookeeper启动成功 (PID: $zk_pid)"
-    else
-        gum style --foreground=red "❌ Zookeeper启动失败"
-        cat /tmp/zookeeper.log
-        exit 1
-    fi
+    local retry_count=0
+    while [ $retry_count -lt 5 ]; do
+        if netstat -an | grep -q :2181; then
+            gum style --foreground=green "✅ Zookeeper启动成功 (PID: $zk_pid)"
+            return 0
+        fi
+        sleep 2
+        retry_count=$((retry_count + 1))
+    done
+    
+    gum style --foreground=red "❌ Zookeeper启动失败"
+    cat /tmp/zookeeper.log
+    exit 1
 }
 
 # 启动Kafka
 start_kafka() {
     gum style --border=rounded --margin="1 2" --padding="2 4" --border-foreground=212 "🚀 启动Kafka"
     
-    # 启动Kafka
-    ./bin/kafka-server-start.sh config/server.properties > /tmp/kafka.log 2>&1 &
+    # 使用clean脚本启动Kafka，避免SLF4J警告
+    ./bin/kafka-run-class-clean.sh kafka.Kafka config/server.properties > /tmp/kafka.log 2>&1 &
     local kafka_pid=$!
     echo $kafka_pid > /tmp/kafka.pid
     
@@ -119,13 +121,19 @@ start_kafka() {
     gum spin --title="等待Kafka启动..." -- sleep 10
     
     # 检查启动状态
-    if netstat -an | grep -q :9092; then
-        gum style --foreground=green "✅ Kafka启动成功 (PID: $kafka_pid)"
-    else
-        gum style --foreground=red "❌ Kafka启动失败"
-        cat /tmp/kafka.log
-        exit 1
-    fi
+    local retry_count=0
+    while [ $retry_count -lt 5 ]; do
+        if netstat -an | grep -q :9092; then
+            gum style --foreground=green "✅ Kafka启动成功 (PID: $kafka_pid)"
+            return 0
+        fi
+        sleep 3
+        retry_count=$((retry_count + 1))
+    done
+    
+    gum style --foreground=red "❌ Kafka启动失败"
+    cat /tmp/kafka.log
+    exit 1
 }
 
 # 创建测试主题
@@ -143,6 +151,8 @@ run_test() {
     gum style --border=rounded --margin="1 2" --padding="2 4" --border-foreground=212 "🧪 运行测试程序"
     
     if gum confirm "是否运行Kafka测试程序?"; then
+        # 设置SLF4J警告抑制参数
+        export KAFKA_OPTS="-Dorg.slf4j.simpleLogger.defaultLogLevel=warn -Dorg.slf4j.simpleLogger.showDateTime=false -Dorg.slf4j.simpleLogger.showThreadName=false -Dorg.slf4j.simpleLogger.showLogName=false"
         gum spin --title="运行测试程序..." -- java -cp "my-debug-module/build/libs/kafka-my-debug-module-0.10.0.0.jar:core/build/dependant-libs-2.10.6/*:clients/build/libs/*:tools/build/libs/*" org.apache.kafka.debug.SimpleKafkaTest
     fi
 }

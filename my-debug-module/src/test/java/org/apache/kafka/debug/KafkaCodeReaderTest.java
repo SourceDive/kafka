@@ -41,7 +41,7 @@ public class KafkaCodeReaderTest {
         System.out.println("=== 测试ProducerRecord创建过程 ===");
         
         // 创建ProducerRecord
-        String topic = "test-topic";
+        String topic = "test-topic-20250919-01";
         String key = "test-key";
         String value = "test-value";
         

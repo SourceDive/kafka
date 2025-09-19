@@ -1,7 +1,7 @@
 version: '2'
 services:
   kafka-manager:
-    image: sheepkiller/kafka-manager:latest
+    image: hlebalbau/kafka-manager:stable
     ports:
       - "9000:9000"
     environment:

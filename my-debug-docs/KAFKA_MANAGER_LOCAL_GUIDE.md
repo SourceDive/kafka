@@ -46,7 +46,7 @@ netstat -an | grep -E "(2181|9092)"
 version: '2'
 services:
   kafka-manager:
-    image: sheepkiller/kafka-manager:latest
+    image: sheepkiller/kafka-manager:2.0.0.2  # 使用支持Kafka 0.10.0的版本
     ports:
       - "9000:9000"
     environment:
@@ -61,6 +61,11 @@ services:
 - `ZK_HOSTS: host.docker.internal:2181`: 连接本地Zookeeper
 - `extra_hosts`: 允许Docker容器访问宿主机服务
 - 只启动Kafka Manager，不启动Kafka和Zookeeper
+
+### ⚠️ Kafka Manager版本支持说明
+- **旧版本问题**: `sheepkiller/kafka-manager:latest` 最高只支持Kafka 0.9.0.1
+- **解决方案**: 使用 `sheepkiller/kafka-manager:2.0.0.2` 支持Kafka 0.10.0+
+- **版本兼容性**: 确保Kafka Manager版本与Kafka版本匹配
 
 ## 📝 使用步骤
 

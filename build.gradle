@@ -124,37 +124,37 @@ subprojects {
       }
   }
 
-  uploadArchives {
-    repositories {
-      signing {
-          required { shouldSign }
-          sign configurations.archives
-
-          // To test locally, replace mavenUrl in ~/.gradle/gradle.properties to file://localhost/tmp/myRepo/
-          mavenDeployer {
-              beforeDeployment { deployment -> signing.signPom(deployment) }
-              repository(url: "${mavenUrl}") {
-                  authentication(userName: "${mavenUsername}", password: "${mavenPassword}")
-              }
-              afterEvaluate {
-                  pom.artifactId = "${archivesBaseName}"
-                  pom.project {
-                      name 'Apache Kafka'
-                      packaging 'jar'
-                      url 'http://kafka.apache.org'
-                      licenses {
-                          license {
-                              name 'The Apache Software License, Version 2.0'
-                              url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
-                              distribution 'repo'
-                          }
-                      }
-                  }
-              }
-          }
-      }
-    }
-  }
+//  uploadArchives {
+//    repositories {
+//      signing {
+//          required { shouldSign }
+//          sign configurations.archives
+//
+//          // To test locally, replace mavenUrl in ~/.gradle/gradle.properties to file://localhost/tmp/myRepo/
+//          mavenDeployer {
+//              beforeDeployment { deployment -> signing.signPom(deployment) }
+//              repository(url: "${mavenUrl}") {
+//                  authentication(userName: "${mavenUsername}", password: "${mavenPassword}")
+//              }
+//              afterEvaluate {
+//                  pom.artifactId = "${archivesBaseName}"
+//                  pom.project {
+//                      name 'Apache Kafka'
+//                      packaging 'jar'
+//                      url 'http://kafka.apache.org'
+//                      licenses {
+//                          license {
+//                              name 'The Apache Software License, Version 2.0'
+//                              url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+//                              distribution 'repo'
+//                          }
+//                      }
+//                  }
+//              }
+//          }
+//      }
+//    }
+//  }
 
   test {
     maxParallelForks = userMaxForks ?: Runtime.runtime.availableProcessors()
@@ -170,68 +170,68 @@ subprojects {
     from '../NOTICE'
   }
 
-  task srcJar(type: Jar) {
-    classifier = 'sources'
-    from '../LICENSE'
-    from '../NOTICE'
-    from sourceSets.main.allSource
-  }
+//  task srcJar(type: Jar) {
+//    archiveClassifier = 'sources'
+//    from '../LICENSE'
+//    from '../NOTICE'
+//    from sourceSets.main.allSource
+//  }
+//
+//  task javadocJar(type: Jar, dependsOn: javadoc) {
+//    archiveClassifier 'javadoc'
+//    from '../LICENSE'
+//    from '../NOTICE'
+//    from javadoc.destinationDir
+//  }
 
-  task javadocJar(type: Jar, dependsOn: javadoc) {
-    classifier 'javadoc'
-    from '../LICENSE'
-    from '../NOTICE'
-    from javadoc.destinationDir
-  }
-
-  task docsJar(dependsOn: javadocJar)
+//  task docsJar(dependsOn: javadocJar)
 
   task systemTestLibs(dependsOn: jar)
 
-  artifacts {
-    archives srcJar
-    archives javadocJar
-  }
+//  artifacts {
+//    archives srcJar
+//    archives javadocJar
+//  }
 
-  if(!sourceSets.test.allSource.isEmpty()) {
-    task testJar(type: Jar) {
-      classifier = 'test'
-      from '../LICENSE'
-      from '../NOTICE'
-      from sourceSets.test.output
-    }
+//  if(!sourceSets.test.allSource.isEmpty()) {
+//    task testJar(type: Jar) {
+//      archiveClassifier = 'test'
+//      from '../LICENSE'
+//      from '../NOTICE'
+//      from sourceSets.test.output
+//    }
+//
+//    task testSrcJar(type: Jar, dependsOn: testJar) {
+//      archiveClassifier = 'test-sources'
+//      from '../LICENSE'
+//      from '../NOTICE'
+//      from sourceSets.test.allSource
+//    }
 
-    task testSrcJar(type: Jar, dependsOn: testJar) {
-      classifier = 'test-sources'
-      from '../LICENSE'
-      from '../NOTICE'
-      from sourceSets.test.allSource
-    }
+//    artifacts {
+//      archives testJar
+//      archives testSrcJar
+//    }
+//  }
 
-    artifacts {
-      archives testJar
-      archives testSrcJar
-    }
-  }
-
-  plugins.withType(ScalaPlugin) {
-    task scaladocJar(type:Jar) {
-      classifier = 'scaladoc'
-      from '../LICENSE'
-      from '../NOTICE'
-      from scaladoc.destinationDir
-    }
-
-    //documentation task should also trigger building scala doc jar
-    docsJar.dependsOn scaladocJar
-
-    artifacts {
-      archives scaladocJar
-    }
-  }
+//  plugins.withType(ScalaPlugin) {
+//    task scaladocJar(type:Jar) {
+//      archiveClassifier = 'scaladoc'
+//      from '../LICENSE'
+//      from '../NOTICE'
+//      from scaladoc.destinationDir
+//    }
+//
+//    //documentation task should also trigger building scala doc jar
+//    docsJar.dependsOn scaladocJar
+//
+//    artifacts {
+//      archives scaladocJar
+//    }
+//  }
 
   tasks.withType(ScalaCompile) {
-    scalaCompileOptions.useAnt = false
+//    scalaCompileOptions.useAnt = false
 
     scalaCompileOptions.additionalParameters = [
       "-deprecation",
@@ -266,9 +266,9 @@ subprojects {
       dependsOn tasks.test
       sourceSets sourceSets.main
       reports {
-        html.enabled = true
-        xml.enabled = true
-        csv.enabled = false
+        html.destination = null  // 禁用HTML报告
+        xml.destination = null   // 禁用XML报告
+        csv.destination = null   // 禁用XML报告
       }
     }
   }
@@ -287,8 +287,8 @@ task jacocoRootReport(type: org.gradle.testing.jacoco.tasks.JacocoReport) {
   executionData = files(javaProjects.jacocoTestReport.executionData)
 
   reports {
-    html.enabled = true
-    xml.enabled = true
+    html.destination = null
+    xml.destination = null
   }
 
   // workaround to ignore projects that don't have any tests at all
@@ -339,11 +339,11 @@ for ( sv in ['2_10', '2_11'] ) {
     tasks = ['releaseTarGz']
   }
 
-  tasks.create(name: "uploadCoreArchives_${sv}", type: GradleBuild) {
-    startParameter = project.getGradle().getStartParameter().newInstance()
-    startParameter.projectProperties += [scalaVersion: "${svInDot}"]
-    tasks = ['core:uploadArchives']
-  }
+//  tasks.create(name: "uploadCoreArchives_${sv}", type: GradleBuild) {
+//    startParameter = project.getGradle().getStartParameter().newInstance()
+//    startParameter.projectProperties += [scalaVersion: "${svInDot}"]
+//    tasks = ['core:uploadArchives']
+//  }
 }
 
 def connectPkgs = ['connect:api', 'connect:runtime', 'connect:json', 'connect:file']
@@ -369,7 +369,7 @@ project(':core') {
   println "Building project 'core' with Scala version ${versions.scala}"
 
   apply plugin: 'scala'
-  apply plugin: "org.scoverage"
+//  apply plugin: "org.scoverage"
   archivesBaseName = "kafka_${versions.baseScala}"
 
   dependencies {
@@ -490,7 +490,7 @@ project(':core') {
   task siteDocsTar(dependsOn: ['genProtocolErrorDocs', 'genProtocolApiKeyDocs', 'genProtocolMessageDocs',
                                'genProducerConfigDocs', 'genConsumerConfigDocs', 'genKafkaConfigDocs',
                                ':connect:runtime:genConnectConfigDocs', ':streams:genStreamsConfigDocs'], type: Tar) {
-    classifier = 'site-docs'
+    archiveClassifier = 'site-docs'
     compression = Compression.GZIP
     from project.file("../docs")
     into 'site-docs'

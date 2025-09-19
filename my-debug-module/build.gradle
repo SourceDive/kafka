@@ -13,5 +13,26 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-include 'core', 'examples', 'clients', 'tools', 'streams', 'streams:examples', 'log4j-appender', 'my-debug-module',
-        'connect:api', 'connect:runtime', 'connect:json', 'connect:file'
+archivesBaseName = "kafka-my-debug-module"
+
+dependencies {
+    compile project(':clients')
+    compile project(':core')
+    compile project(':tools')
+    compile project(':streams')
+    
+    compile libs.slf4jlog4j
+    compile libs.junit
+    
+    testCompile project(':clients').sourceSets.test.output
+    testCompile project(':core').sourceSets.test.output
+    testCompile libs.junit
+}
+
+javadoc {
+    enabled = false
+}
+
+// 跳过checkstyle检查，专注于代码学习
+checkstyleMain.enabled = false
+checkstyleTest.enabled = false

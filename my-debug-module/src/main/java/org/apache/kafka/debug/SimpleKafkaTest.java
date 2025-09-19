@@ -105,8 +105,17 @@ public class SimpleKafkaTest {
             
             // 消费消息
             int messageCount = 0;
-            while (messageCount < 5) {
+            int pollCount = 0;
+            int maxPolls = 10; // 最多轮询10次，避免无限等待
+            
+            while (messageCount < 5 && pollCount < maxPolls) {
                 ConsumerRecords<String, String> records = consumer.poll(1000);
+                pollCount++;
+                
+                if (records.isEmpty()) {
+                    System.out.println("等待消息中... (轮询 " + pollCount + "/" + maxPolls + ")");
+                    continue;
+                }
                 
                 for (ConsumerRecord<String, String> record : records) {
                     System.out.println("收到消息: " + record.key() + " -> " + record.value());
@@ -118,6 +127,12 @@ public class SimpleKafkaTest {
                     
                     messageCount++;
                 }
+            }
+            
+            if (messageCount == 0) {
+                System.out.println("⚠️  没有收到任何消息，请检查Kafka服务是否正常运行");
+            } else {
+                System.out.println("✅ 成功消费了 " + messageCount + " 条消息");
             }
             
         } catch (Exception e) {
